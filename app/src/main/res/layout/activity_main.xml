@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:src="@mipmap/u18"
+            android:id="@+id/iv_one"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_weight="4"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:contentDescription=""
+            />
+        <TextView
+            android:id="@+id/btn_one"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:textSize="30sp"
+            android:layout_weight="1"
+            android:text="单件"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+
+    <ImageView
+            android:src="@mipmap/u25"
+            android:id="@+id/iv_count"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_weight="4"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:contentDescription=""
+            />
+
+        <TextView
+            android:id="@+id/btn_count"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:text="计数"
+            />
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
