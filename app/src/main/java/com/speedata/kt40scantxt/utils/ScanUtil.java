@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.SystemProperties;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,6 +71,7 @@ public class ScanUtil {
 	 * 发送广播 调用系统扫描
 	 */
 	private void startScan() {
+		SystemProperties.set("persist.sys.scanstopimme" ,"false");
 		Intent intent = new Intent();
 		String START_SCAN_ACTION = "com.geomobile.se4500barcode";
 		intent.setAction(START_SCAN_ACTION);
@@ -109,5 +111,6 @@ public class ScanUtil {
 		intent.setAction(STOP_SCAN_ACTION);
 		context.sendBroadcast(intent);
 		context.unregisterReceiver(receiver);
+		SystemProperties.set("persist.sys.scanstopimme", "true");
 	}
 }
