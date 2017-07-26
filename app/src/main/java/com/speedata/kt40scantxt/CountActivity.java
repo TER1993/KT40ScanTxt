@@ -238,7 +238,7 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
             if (h == 1) {
                 Toast.makeText(this, R.string.success_output, Toast.LENGTH_SHORT).show();
             }
-
+            MainActivity.scanFile(CountActivity.this, createFilename());
         } catch (IOException e) {
             e.printStackTrace();
         }

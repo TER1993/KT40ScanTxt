@@ -211,10 +211,11 @@ public class OneActivity extends Activity implements BaseScan, View.OnClickListe
             if (h == 1) {
                 Toast.makeText(this, R.string.success_output, Toast.LENGTH_SHORT).show();
             }
-
+            MainActivity.scanFile(OneActivity.this, createFilename());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
     }
 
