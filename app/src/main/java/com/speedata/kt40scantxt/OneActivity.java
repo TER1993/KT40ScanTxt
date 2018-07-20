@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -24,20 +25,30 @@ import com.speedata.kt40scantxt.utils.MyDateAndTime;
 import com.speedata.kt40scantxt.utils.PlaySoundPool;
 import com.speedata.kt40scantxt.utils.ScanUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author xuyan
+ */
 public class OneActivity extends Activity implements BaseScan, View.OnClickListener {
     protected TextView mBarTitle;
     protected ImageView mBarLeft;
-    //单件扫描不计数，不允许重复
-
+    /**
+     * 单件扫描不计数，不允许重复
+     */
     private List<OutputOne> mList;
     private OneAdapter mAdapter;
     private Button btnOne;
-    private ScanUtil scanUtil; //扫描录入SN
-    private AlertDialog mExitDialog; //按退出时弹出对话框
+    /**
+     * 扫描录入SN
+     */
+    private ScanUtil scanUtil;
+    /**
+     * 按退出时弹出对话框
+     */
+    private AlertDialog mExitDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +69,8 @@ public class OneActivity extends Activity implements BaseScan, View.OnClickListe
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_one_content);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL)); //adapter横线
+        //adapter横线
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
         mAdapter = new OneAdapter(this, R.layout.view_one_item_layout, mList);
 
@@ -102,24 +113,26 @@ public class OneActivity extends Activity implements BaseScan, View.OnClickListe
         @Override
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
-                case DialogInterface.BUTTON_POSITIVE: // 取消
+                // 取消
+                case DialogInterface.BUTTON_POSITIVE:
                     // 取消显示对话框
                     mExitDialog.dismiss();
                     break;
-
-                case DialogInterface.BUTTON_NEUTRAL: // 退出程序
+                // 退出程序
+                case DialogInterface.BUTTON_NEUTRAL:
                     // 结束，将导致onDestroy()方法被回调
-
                     finish();
+                    break;
+                default:
                     break;
             }
         }
     }
 
 
-
-
-    //扫描获取SN将扫描结果显示在界面上
+    /**
+     * 扫描获取SN将扫描结果显示在界面上
+     */
     @Override
     protected void onResume() {
         scanUtil = new ScanUtil(this);
@@ -130,18 +143,29 @@ public class OneActivity extends Activity implements BaseScan, View.OnClickListe
                 onGetBarcode(barcode);
 
             }
+
+            @Override
+            public void getByteBarcode(byte[] barcode) {
+
+                onGetByteBarcode(barcode);
+
+            }
         });
         super.onResume();
     }
 
-    //停止扫描
+    /**
+     * 停止扫描
+     */
     @Override
     protected void onPause() {
         scanUtil.stopScan();
         super.onPause();
     }
 
-    //扫描结果去除回车并处理
+    /**
+     * 扫描结果去除回车并处理
+     */
     @Override
     public void onGetBarcode(String barcode) {
 
@@ -174,6 +198,12 @@ public class OneActivity extends Activity implements BaseScan, View.OnClickListe
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onGetByteBarcode(byte[] barcode) {
+        Log.d("test", Arrays.toString(barcode));
+    }
+
+
     /**
      * 这是导航
      *
@@ -195,40 +225,37 @@ public class OneActivity extends Activity implements BaseScan, View.OnClickListe
             case R.id.btn_one_save:
                 //导出为txt文件，制作文件名
                 outPutFile();
-
                 break;
             case R.id.iv_left:
                 finish();
+                break;
+            default:
                 break;
         }
     }
 
     private void outPutFile() {
-
-        try {
-            FileUtils fileUtils = new FileUtils();
-            int h = fileUtils.outputOnefile(mList, createFilename());
-            if (h == 1) {
-                Toast.makeText(this, R.string.success_output, Toast.LENGTH_SHORT).show();
-            }
-            MainActivity.scanFile(OneActivity.this, createFilename());
-        } catch (IOException e) {
-            e.printStackTrace();
+        FileUtils fileUtils = new FileUtils();
+        int h = fileUtils.outputOnefile(mList, createFilename());
+        if (h == 1) {
+            Toast.makeText(this, R.string.success_output, Toast.LENGTH_SHORT).show();
         }
-
-
+        MainActivity.scanFile(OneActivity.this, createFilename());
     }
 
-    //创建导出文件的名字
-    public String createFilename() throws IOException {
+    /**
+     * 创建导出文件的名字
+     *
+     * @return 完整文件路径+名
+     */
+    public String createFilename() {
         String checktime = MyDateAndTime.getMakerDate();
-
-        String date = checktime.substring(0, 8); //获得年月日
-        String time = checktime.substring(8, 12); //获得年月日
+        //获得年月日
+        String date = checktime.substring(0, 8);
+        //获得年月日
+        String time = checktime.substring(8, 12);
         String name = getString(R.string.singleton_) + date + "_" + time;
-
-        return  getString(R.string.export_path_) + name + getString(R.string.txt);
-
+        return getString(R.string.export_path_) + name + getString(R.string.txt);
     }
 
 

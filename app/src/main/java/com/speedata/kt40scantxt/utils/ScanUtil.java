@@ -13,7 +13,10 @@ public class ScanUtil {
 
 	public interface OnScanListener {
 		void getBarcode(String barcode);
+		void getByteBarcode(byte[] barcode);
 	}
+
+
 
 	private OnScanListener listener;
 
@@ -48,8 +51,10 @@ public class ScanUtil {
 			String action = intent.getAction();
 			if (action.equals(RECE_DATA_ACTION)) {
 				String data = intent.getStringExtra("se4500");
+				byte[] data2 = intent.getByteArrayExtra("se4500_byte");
 				if (listener != null) {
 					listener.getBarcode(data);
+					listener.getByteBarcode(data2);
 				}
 				if (isRepeat) {
 					cancelRepeat();
@@ -70,7 +75,7 @@ public class ScanUtil {
 	/**
 	 * 发送广播 调用系统扫描
 	 */
-	private void startScan() {
+	public void startScan() {
 		SystemProperties.set("persist.sys.scanstopimme" ,"false");
 		Intent intent = new Intent();
 		String START_SCAN_ACTION = "com.geomobile.se4500barcode";

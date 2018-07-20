@@ -11,4 +11,6 @@ public interface BaseScan {
      * @param barcode
      */
     public void onGetBarcode(String barcode);
+
+    public void onGetByteBarcode(byte[] barcode);
 }

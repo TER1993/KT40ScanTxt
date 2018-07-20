@@ -25,7 +25,6 @@ import com.speedata.kt40scantxt.utils.MyDateAndTime;
 import com.speedata.kt40scantxt.utils.PlaySoundPool;
 import com.speedata.kt40scantxt.utils.ScanUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,21 +32,39 @@ import xyz.reginer.baseadapter.CommonRvAdapter;
 
 import static com.speedata.kt40scantxt.utils.ToolCommon.isNumeric;
 
+/**
+ * @author xuyan
+ */
 public class CountActivity extends Activity implements BaseScan, View.OnClickListener, CommonRvAdapter.OnItemChildClickListener {
     protected TextView mBarTitle;
     protected ImageView mBarLeft;
-    //单件扫描不计数，不允许重复
-
+    /**
+     *单件扫描不计数，不允许重复
+     */
     private List<OutputCount> mList;
     private CountAdapter mAdapter;
     private Button btnCount;
-    private ScanUtil scanUtil; //扫描录入SN
+    /**
+     * 扫描录入SN
+     */
+    private ScanUtil scanUtil;
 
-    //item控件点击显示
+    /**
+     * item控件点击显示
+     */
     private AlertDialog mDialogItem;
-    private EditText etTxtInput; //控件弹出对话框上的输入框
-    private int mPosition; //选择的dialog的item的position
-    private android.support.v7.app.AlertDialog mExitDialog; //按退出时弹出对话框
+    /**
+     * 控件弹出对话框上的输入框
+     */
+    private EditText etTxtInput;
+    /**
+     * 选择的dialog的item的position
+     */
+    private int mPosition;
+    /**
+     * 按退出时弹出对话框
+     */
+    private android.support.v7.app.AlertDialog mExitDialog;
 
 
     @Override
@@ -70,15 +87,14 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_count_content);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL)); //adapter横线
+        //adapter横线
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
         mAdapter = new CountAdapter(this, R.layout.view_count_item_layout, mList);
 
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemChildClickListener(this);
-
 
 
         // 创建退出时的对话框，此处根据需要显示的先后顺序决定按钮应该使用Neutral、Negative或Positive
@@ -92,10 +108,10 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
                 .create();
 
     }
+
     private void initTitle() {
         setNavigation(1, getString(R.string.count_title));
     }
-
 
 
     @Override
@@ -118,22 +134,27 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
         @Override
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
-                case DialogInterface.BUTTON_POSITIVE: // 取消
+                // 取消
+                case DialogInterface.BUTTON_POSITIVE:
                     // 取消显示对话框
                     mExitDialog.dismiss();
                     break;
-
-                case DialogInterface.BUTTON_NEUTRAL: // 退出程序
+                // 退出程序
+                case DialogInterface.BUTTON_NEUTRAL:
                     // 结束，将导致onDestroy()方法被回调
 
                     finish();
+                    break;
+                default:
                     break;
             }
         }
     }
 
 
-    //扫描获取SN将扫描结果显示在界面上
+    /**
+     * 扫描获取SN将扫描结果显示在界面上
+     */
     @Override
     protected void onResume() {
         scanUtil = new ScanUtil(this);
@@ -144,18 +165,27 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
                 onGetBarcode(barcode);
 
             }
+
+            @Override
+            public void getByteBarcode(byte[] barcode) {
+
+            }
         });
         super.onResume();
     }
 
-    //停止扫描
+    /**
+     * 停止扫描
+     */
     @Override
     protected void onPause() {
         scanUtil.stopScan();
         super.onPause();
     }
 
-    //扫描结果去除回车并处理
+    /**
+     * 扫描结果去除回车并处理
+     */
     @Override
     public void onGetBarcode(String barcode) {
 
@@ -186,11 +216,11 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
 
             }
 
-                OutputCount bean = new OutputCount();
-                bean.setNumber(barcode);
-                bean.setCount("1");
-                mList.add(bean);
-                PlaySoundPool.getPlaySoundPool(this).playLaser();
+            OutputCount bean = new OutputCount();
+            bean.setNumber(barcode);
+            bean.setCount("1");
+            mList.add(bean);
+            PlaySoundPool.getPlaySoundPool(this).playLaser();
 
 
         }
@@ -198,6 +228,10 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onGetByteBarcode(byte[] barcode) {
+
+    }
 
 
     /**
@@ -226,42 +260,49 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
             case R.id.iv_left:
                 finish();
                 break;
+            default:
+                break;
         }
     }
 
     private void outPutFile() {
 
-
-        try {
-            FileUtils fileUtils = new FileUtils();
-            int h = fileUtils.outputCountfile(mList, createFilename());
-            if (h == 1) {
-                Toast.makeText(this, R.string.success_output, Toast.LENGTH_SHORT).show();
-            }
-            MainActivity.scanFile(CountActivity.this, createFilename());
-        } catch (IOException e) {
-            e.printStackTrace();
+        FileUtils fileUtils = new FileUtils();
+        int h = fileUtils.outputCountfile(mList, createFilename());
+        if (h == 1) {
+            Toast.makeText(this, R.string.success_output, Toast.LENGTH_SHORT).show();
         }
+        MainActivity.scanFile(CountActivity.this, createFilename());
 
     }
 
-    //创建导出文件的名字
-    public String createFilename() throws IOException {
+    /**
+     * 创建导出文件的名字
+     */
+    public String createFilename() {
         String checktime = MyDateAndTime.getMakerDate();
-
-        String date = checktime.substring(0, 8); //获得年月日
-        String time = checktime.substring(8, 12); //获得年月日
+        //获得年月日
+        String date = checktime.substring(0, 8);
+        String time = checktime.substring(8, 12);
         String name = getString(R.string.count_) + date + "_" + time;
 
-        return  getString(R.string.export_path_) + name + getString(R.string.txt);
+        return getString(R.string.export_path_) + name + getString(R.string.txt);
 
     }
 
+    /**
+     * 点击数量时弹出修改输入对话框
+     *
+     * @param v        view
+     * @param position position
+     */
     @Override
     public void onChildClick(View v, int position) {
-        switch (v.getId()) { //点击数量时弹出修改输入对话框
+        switch (v.getId()) {
             case R.id.tv_count_line2:
                 changeCount(position);
+                break;
+            default:
                 break;
         }
     }
@@ -290,30 +331,30 @@ public class CountActivity extends Activity implements BaseScan, View.OnClickLis
         @Override
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
-                case DialogInterface.BUTTON_POSITIVE: // 确定
-
+                // 确定
+                case DialogInterface.BUTTON_POSITIVE:
                     String txt = etTxtInput.getText().toString();
-
                     if (isNumeric(txt)) {
                         mDialogItem.dismiss();
-
                         updateList(txt);
                     } else {
                         Toast.makeText(CountActivity.this, "只能输入数字，请重新输入数量", Toast.LENGTH_SHORT).show();
                     }
-
-
-
                     break;
-                case DialogInterface.BUTTON_NEGATIVE: // 取消
+                // 取消
+                case DialogInterface.BUTTON_NEGATIVE:
                     // 取消显示对话框
                     mDialogItem.dismiss();
-
+                    break;
+                default:
                     break;
             }
         }
 
-        //更新数组以及控件的显示
+        /**
+         * 更新数组以及控件的显示
+         */
+
         private void updateList(String txt) {
             if ("".equals(txt)) {
                 Toast.makeText(CountActivity.this, "未修改", Toast.LENGTH_SHORT).show();
